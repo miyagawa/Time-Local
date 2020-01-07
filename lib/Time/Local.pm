@@ -222,6 +222,37 @@ sub timelocal_modern {
     return &timelocal;
 }
 
+package Time::Local::POSIX;
+# needs to be here to access lexicals %Options
+
+use parent 'Exporter';
+our @EXPORT = qw( timelocal timegm );
+our @EXPORT_OK = qw( timelocal_nocheck timegm_nocheck );
+
+sub timelocal {
+    local $Options{no_year_munging} = 1;
+    return Time::Local::timelocal(@_[0..4], $_[5] + 1900);
+}
+
+sub timelocal_nocheck {
+    local $Options{no_year_munging} = 1;
+    local $Options{no_range_check} = 1;
+    return Time::Local::timelocal(@_[0..4], $_[5] + 1900);
+}
+
+sub timegm {
+    local $Options{no_year_munging} = 1;
+    return Time::Local::timegm(@_[0..4], $_[5] + 1900);
+}
+
+sub timegm_nocheck {
+    local $Options{no_year_munging} = 1;
+    local $Options{no_range_check} = 1;
+    return Time::Local::timegm(@_[0..4], $_[5] + 1900);
+}
+
+package Time::Local;
+
 1;
 
 # ABSTRACT: Efficiently compute time from local and GMT time
